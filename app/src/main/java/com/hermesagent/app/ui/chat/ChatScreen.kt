@@ -35,8 +35,8 @@ import com.hermesagent.app.ui.theme.Spacing
 
 @Composable
 fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
-    val messages by viewModel.messages.collectAsState()
-    val uiState by viewModel.uiState.collectAsState()
+    val messages by viewModel.messages.collectAsState(initial = emptyList<ChatMessage>())
+    val uiState by viewModel.uiState.collectAsState(initial = ChatUiState.Idle)
     var input by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
 

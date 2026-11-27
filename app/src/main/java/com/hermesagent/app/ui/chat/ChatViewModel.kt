@@ -8,6 +8,8 @@ import com.hermesagent.app.data.db.ChatDao
 import com.hermesagent.app.data.db.ChatMessageEntity
 import com.hermesagent.app.domain.model.ChatMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
