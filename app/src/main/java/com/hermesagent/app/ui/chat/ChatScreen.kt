@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hermesagent.app.domain.model.ChatMessage
@@ -41,13 +44,55 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
     val listState = rememberLazyListState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            state = listState,
-            modifier = Modifier.weight(1f).padding(horizontal = Spacing.lg),
-            verticalArrangement = Arrangement.spacedBy(Spacing.sm)
-        ) {
-            items(messages, key = { it.id }) { msg ->
-                ChatBubble(msg)
+        Box(modifier = Modifier.weight(1f)) {
+            when {
+                messages.isEmpty() && uiState !is ChatUiState.Loading -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize().padding(Spacing.xl),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text("💬", style = MaterialTheme.typography.displayLarge)
+                        Spacer(Modifier.padding(Spacing.sm))
+                        Text(
+                            "Start a conversation with Hermes",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                uiState is ChatUiState.Error -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize().padding(Spacing.xl),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text("⚠️", style = MaterialTheme.typography.displayLarge)
+                        Spacer(Modifier.padding(Spacing.sm))
+                        Text(
+                            (uiState as ChatUiState.Error).message,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(Modifier.padding(Spacing.md))
+                        Button(onClick = { viewModel.send(input.ifBlank { "retry" }) }) {
+                            Text("Retry")
+                        }
+                    }
+                }
+                else -> {
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize().padding(horizontal = Spacing.lg),
+                        verticalArrangement = Arrangement.spacedBy(Spacing.sm)
+                    ) {
+                        items(messages, key = { it.id }) { msg ->
+                            ChatBubble(msg)
+                        }
+                    }
+                }
             }
         }
 
@@ -73,7 +118,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
                 enabled = input.isNotBlank() && uiState !is ChatUiState.Loading
             ) {
                 if (uiState is ChatUiState.Loading) {
-                    CircularProgressIndicator(modifier = Modifier.padding(4.dp))
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
                 } else {
                     Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
                 }
