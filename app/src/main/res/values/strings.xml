@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Hermes Agent</string>
+    <string name="chat_placeholder">Message Hermes…</string>
+    <string name="send">Send</string>
+    <string name="loading">Thinking…</string>
+    <string name="error_retry">Retry</string>
+    <string name="empty_chat">Start a conversation with Hermes</string>
+</resources>
